@@ -1,0 +1,23 @@
+{
+  "name": "sharp-theme",
+  "version": "4.0.9",
+  "description": "Sharp styles for the back-office",
+  "main": "dist/sharp.css",
+  "scripts": {
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code16/sharp.git"
+  },
+  "keywords": [
+    "sharp",
+    "theme"
+  ],
+  "author": "Code 16",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/code16/sharp/issues"
+  },
+  "homepage": "https://github.com/code16/sharp#readme"
+}

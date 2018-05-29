@@ -1,28 +1,17 @@
-$input-label-weight: 400;
-$button-border-width: 1px;
+// carbon overrides
+$input-label-weight: 400!default;
+$button-border-width: 1px!default;
+$box-shadow: rgba(0,0,0,.1)!default;
 
-//$grid-gutter-widths: (
-//        xs: 15px,
-//        sm: 15px, // 30px
-//        md: $grid-gutter-width, // 30px
-//        lg: $grid-gutter-width, // 30px
-//        xl: $grid-gutter-width  // 30px
-//);
+$brand-01: #314255!default;
+$brand-01-light: #68829E!default;
+$brand-03: #FD7400!default;
+$ui-01: #FFFFFF!default;
+$ui-02: #EBF0F7!default;
+$ui-03: #DAE3EE!default;
+$field-01: #FFFFFF!default;
+$text-03: #8C9BA5!default;
 
-$brand-01: #314255;
-$brand-03: #FD7400;
-$ui-01: #FFFFFF;
-$ui-02: #EBF0F7;
-$ui-03: #DAE3EE;
-$field-01: #FFFFFF;
-$text-03: $color__navy-gray-7;
-
-$brand-01-light: #68829E;
-
-$box-shadow: $ui-03;
-
-$breakpoint-fixed-menu: 'lg';
-
-$form-item-margin-bottom : 1.5rem;
-
-$transition-collapse: height 300ms $bx--standard-easing;
+// custom variables
+$breakpoint-fixed-menu: 'lg' !default;
+$form-item-margin-bottom : 1.5rem !default;

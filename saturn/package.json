@@ -16,6 +16,7 @@
     "jquery": "^3.1.1",
     "laravel-mix": "^1.4.2",
     "lodash": "^4.17.4",
+    "sharp-theme": "^4.0.9",
     "vue": "^2.1.10"
   }
 }

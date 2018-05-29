@@ -1,2 +1,4 @@
 $fa-font-path: '/vendor/sharp/fonts';
-@import "node_modules/font-awesome/scss/font-awesome";
+@import "~font-awesome/scss/font-awesome";
+@import "~simplemde/dist/simplemde.min.css";
+@import "~trix/dist/trix.css";

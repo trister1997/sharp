@@ -38,7 +38,8 @@
     "prod": "npm run production",
     "test": "cross-env NODE_ENV=test node_modules/webpack/bin/webpack.js --config=node_modules/laravel-mix/setup/webpack.config.js; node_modules/.bin/jest",
     "stats": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --config=node_modules/laravel-mix/setup/webpack.config.js --profile --json | tail -n +3 > stats.json",
-    "show-stats": "npm run stats && webpack-bundle-size-analyzer stats.json"
+    "show-stats": "npm run stats && webpack-bundle-size-analyzer stats.json",
+    "release": "./scripts/release.sh"
   },
   "devDependencies": {
     "axios": "^0.15.2",

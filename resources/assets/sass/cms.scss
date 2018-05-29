@@ -9,6 +9,7 @@ html, body {
 $css--reset: true;
 $css--typography: true;
 
+@import 'vars';
 @import '~carbon-components/scss/globals/scss/colors';
 @import '~carbon-components/scss/globals/scss/vars';
 
@@ -20,7 +21,7 @@ $css--typography: true;
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/utilities';
 
-@import 'vars';
+
 
 body {
   background-color: $ui-02;
