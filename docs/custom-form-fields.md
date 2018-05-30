@@ -83,9 +83,16 @@ Vue.use(Sharp, {
 mix.js('/resources/assets/js/sharp-plugin.js', '/public/js')
 ```
 
-> Warning: the file name must be sharp-plugin.js in order to ensure Sharp will find it.
+> Warning: the file name must be js/sharp-plugin.js in order to ensure Sharp will find it. If you need to change this, you must declare a config in config/sharp.php:
 
-You can `.version()` this JS file if you want to.
+ ````php
+    "custom_form_fields" => [
+        "file_path" => "js/sharp/my-sharp-plugin.js"
+    ]
+ ````
+
+Of course, you can `.version()` this JS file if you want to.
+
 
 
 ## On the back side

@@ -114,7 +114,7 @@ function sharp_markdown_thumbnails(string $html, string $classNames, int $width 
 function sharp_custom_form_fields()
 {
     try {
-        return "<script src='" . mix('/js/sharp-plugin.js') . "'></script>";
+        return "<script src='" . mix(config('sharp.custom_form_fields.file_path', '/js/sharp-plugin.js')) . "'></script>";
 
     } catch(\Exception $e) {
         return "";

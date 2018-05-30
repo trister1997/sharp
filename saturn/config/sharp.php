@@ -11,6 +11,10 @@ return [
         ],
     ],
 
+    "custom_form_fields" => [
+        "file_path" => "js/sharp-plugin.js"
+    ],
+
     "entities" => [
         "spaceship" => [
             "list" => \App\Sharp\SpaceshipSharpList::class,
