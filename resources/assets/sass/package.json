@@ -1,8 +1,8 @@
 {
   "name": "sharp-theme",
-  "version": "4.0.9",
+  "version": "4.0.10",
   "description": "Sharp styles for the back-office",
-  "main": "dist/sharp.css",
+  "main": "sass/sharp.scss",
   "scripts": {
 
   },
