@@ -31,6 +31,7 @@ export default {
                 })
                 .then(response=>{
                     this.mount(response.data);
+                    this.handleNotifications(response.data);
                     this.ready = true;
                     return Promise.resolve(response);
                 })
@@ -45,6 +46,19 @@ export default {
                 .catch(error=>{
                     return Promise.reject(error);
                 });
+        },
+        showNotification({ level, title, message, autoHide }) {
+            this.$notify({
+                title,
+                type: level,
+                text: message,
+                duration: autoHide ? 4000 : -1
+            });
+        },
+        handleNotifications(data={}) {
+            if(Array.isArray(data.notifications)) {
+                setTimeout(() => data.notifications.forEach(this.showNotification), 500);
+            }
         }
     },
     created() {

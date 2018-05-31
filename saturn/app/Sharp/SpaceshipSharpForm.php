@@ -203,6 +203,15 @@ class SpaceshipSharpForm extends SharpForm
             })
             ->save($instance, $data);
 
+        $this->notify("Spaceship was updated with success!")
+            ->setDetail("Congratulations, this was not an easy thing to do.")
+            ->setLevelSuccess()
+            ->setAutoHide(false);
+
+        if($data["capacity"] >= 1000) {
+            $this->notify("this is a huge spaceship, by the way!");
+        }
+
         return $instance->id;
     }
 

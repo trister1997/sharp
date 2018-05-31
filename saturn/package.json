@@ -18,5 +18,8 @@
     "lodash": "^4.17.4",
     "sharp-theme": "^4.0.9",
     "vue": "^2.1.10"
+  },
+  "dependencies": {
+    "sharp-plugin": "0.0.1"
   }
 }

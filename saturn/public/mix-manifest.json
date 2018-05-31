@@ -1,5 +1,6 @@
 {
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/css/sharp.css": "/css/sharp.css"
+    "/js/app.js": "/js/app.js?id=a4bd0d059669cb4ec6f6",
+    "/css/app.css": "/css/app.css?id=3ede8f2085da46f757cf",
+    "/css/sharp.css": "/css/sharp.css?id=f9cef2aef12abd28c6ae",
+    "/js/sharp-plugin.js": "/js/sharp-plugin.js?id=8b6b784beee5604c14d5"
 }

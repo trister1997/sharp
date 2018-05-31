@@ -2,6 +2,8 @@
 
 namespace Code16\Sharp\Tests\Feature\Api;
 
+use Code16\Sharp\Tests\Fixtures\PersonSharpForm;
+
 class EntityListControllerTest extends BaseApiTest
 {
     protected function setUp()
@@ -204,6 +206,41 @@ class EntityListControllerTest extends BaseApiTest
                 "searchable" => true,
                 "paginated" => false
             ]]);
+    }
+
+    /** @test */
+    public function we_can_get_notifications()
+    {
+        $this->buildTheWorld();
+
+        (new PersonSharpForm())->notify("title")
+            ->setLevelSuccess()
+            ->setDetail("body")
+            ->setAutoHide(false);
+
+        $this->json('get', '/sharp/api/list/person')
+            ->assertStatus(200)
+            ->assertJson(["notifications" => [[
+                "level" => "success",
+                "title" => "title",
+                "message" => "body",
+                "autoHide" => false
+            ]]]);
+
+        $this->json('get', '/sharp/api/list/person')
+            ->assertStatus(200)
+            ->assertJsonMissing(["alert"]);
+
+        (new PersonSharpForm())->notify("title1");
+        (new PersonSharpForm())->notify("title2");
+
+        $this->json('get', '/sharp/api/list/person')
+            ->assertStatus(200)
+            ->assertJson(["notifications" => [[
+                "title" => "title1",
+            ], [
+                "title" => "title2",
+            ]]]);
     }
 
     /** @test */
