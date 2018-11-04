@@ -93,6 +93,8 @@
                 fields: null,
                 config: null,
                 authorizations: null,
+                redirect: true,
+                deletable: true,
 
                 errors:{},
                 locale: '',
@@ -150,12 +152,15 @@
             updateVisibility(key, visibility) {
                 this.$set(this.fieldVisible, key, visibility);
             },
-            mount({fields, layout, data={}, config={}, authorizations={}}) {
+            mount({fields, layout, data={}, config={}, authorizations={}, redirect = true, deletable = true}) {
                 this.fields = fields;
                 this.layout = this.patchLayout(layout);
                 this.data = data;
                 this.config = config;
                 this.authorizations = authorizations;
+                this.redirect = redirect;
+                this.deletable = deletable;
+
 
                 this.fieldVisible = Object.keys(this.fields).reduce((res, fKey) => {
                     res[fKey] = true;
@@ -200,7 +205,7 @@
                 this.actionsBus.$emit('setup', {
                     locales: null, //this.config.locales,
                     showSubmitButton: showSubmitButton && !disable,
-                    showDeleteButton: !this.isCreation && this.authorizations.delete && !disable,
+                    showDeleteButton: !this.isCreation && this.authorizations.delete && !disable && this.deletable,
                     showBackButton: this.isReadOnly,
                     opType: this.isCreation ? 'create' : 'update'
                 });
@@ -210,7 +215,11 @@
                 }
             },
             redirectToList({ restoreContext=true }={}) {
-                location.href = `/sharp/list/${this.baseEntityKey}${restoreContext?'?restore-context=1':''}`
+                if (this.redirect) {
+                    location.href = `/sharp/list/${this.baseEntityKey}${restoreContext ? '?restore-context=1' : ''}`
+                } else {
+                    this.mainLoading.$emit('hide');
+                }
             },
         },
         actions: {

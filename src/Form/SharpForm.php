@@ -28,6 +28,16 @@ abstract class SharpForm
     protected $layoutBuilt = false;
 
     /**
+     * @var bool
+     */
+    public $redirect = true;
+
+    /**
+     * @var bool
+     */
+    public $deletable = true;
+
+    /**
      * Return the form fields layout.
      *
      * @return array

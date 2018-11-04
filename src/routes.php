@@ -41,7 +41,6 @@ Route::group([
         ->name("code16.sharp.api.form.edit")
         ->middleware('sharp_api_append_form_authorizations')
         ->uses('FormController@edit');
-
     Route::post("/form/{entityKey}/{instanceId}")
         ->name("code16.sharp.api.form.update")
         ->uses('FormController@update');

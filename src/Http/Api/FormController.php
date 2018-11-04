@@ -21,7 +21,9 @@ class FormController extends ApiController
         return response()->json([
             "fields" => $form->fields(),
             "layout" => $form->formLayout(),
-            "data" => $form->instance($instanceId)
+            "data" => $form->instance($instanceId),
+            "redirect" => $form->redirect,
+            "deletable" => $form->deletable
         ]);
     }
 
