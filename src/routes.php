@@ -1,8 +1,10 @@
 <?php
 
+$basePath = env('SHARP_BASE_PATH') ? env('SHARP_BASE_PATH') : 'sharp';
+
 // API routes
 Route::group([
-    'prefix' => '/sharp/api',
+    'prefix' => '/' . $basePath . '/api',
     'middleware' => ['sharp_web', 'sharp_api_errors', 'sharp_api_context', 'sharp_api_validation', 'sharp_locale'],
     'namespace' => 'Code16\Sharp\Http\Api'
 ], function() {
@@ -61,7 +63,7 @@ Route::group([
 
 // Web routes
 Route::group([
-    'prefix' => '/sharp',
+    'prefix' => '/' . $basePath,
     'middleware' => ['sharp_web'],
     'namespace' => 'Code16\Sharp\Http'
 ], function() {

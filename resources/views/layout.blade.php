@@ -14,6 +14,9 @@
 
     @yield('content')
 
+    <script type="text/javascript">
+        window.BASE_PATH = '{{env('SHARP_BASE_PATH') ? env('SHARP_BASE_PATH') : 'sharp'}}';
+    </script>
     <script src="/vendor/sharp/manifest.js?version={{ sharp_version() }}"></script>
     <script src="/vendor/sharp/vendor.js?version={{ sharp_version() }}"></script>
     <script src="/vendor/sharp/api.js?version={{ sharp_version() }}"></script>
