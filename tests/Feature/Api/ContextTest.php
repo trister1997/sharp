@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ContextTest extends BaseApiTest
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -24,7 +24,8 @@ class ContextTest extends BaseApiTest
         $this->json('get', '/sharp/api/form/person/50');
 
         $this->assertTrue($context->isUpdate());
-        $this->assertEquals("50", $context->entityId());
+        $this->assertEquals("50", $context->instanceId());
+        $this->assertEquals("person", $context->entityKey());
     }
 
     /** @test */
@@ -40,7 +41,8 @@ class ContextTest extends BaseApiTest
         ]);
 
         $this->assertTrue($context->isUpdate());
-        $this->assertEquals("50", $context->entityId());
+        $this->assertEquals("50", $context->instanceId());
+        $this->assertEquals("person", $context->entityKey());
     }
 
     /** @test */
@@ -53,6 +55,7 @@ class ContextTest extends BaseApiTest
         $this->json('get', '/sharp/api/form/person');
 
         $this->assertTrue($context->isCreation());
+        $this->assertEquals("person", $context->entityKey());
     }
 
     /** @test */
@@ -68,6 +71,7 @@ class ContextTest extends BaseApiTest
         ]);
 
         $this->assertTrue($context->isCreation());
+        $this->assertEquals("person", $context->entityKey());
     }
 
     /** @test */
@@ -92,6 +96,32 @@ class ContextTest extends BaseApiTest
             "name" => "Jane Fonda",
             "age" => 42
         ])->assertStatus(200);
+    }
+
+    /** @test */
+    public function context_is_set_on_an_entity_list_case()
+    {
+        $this->buildTheWorld();
+
+        $context = app(SharpContext::class);
+
+        $this->json('get', '/sharp/api/list/person');
+
+        $this->assertTrue($context->isEntityList());
+        $this->assertEquals("person", $context->entityKey());
+    }
+
+    /** @test */
+    public function context_is_set_on_a_dashboard_case()
+    {
+        $this->buildTheWorld();
+
+        $context = app(SharpContext::class);
+
+        $this->json('get', '/sharp/api/dashboard/personal_dashboard');
+
+        $this->assertTrue($context->isDashboard());
+        $this->assertEquals("personal_dashboard", $context->entityKey());
     }
 }
 

@@ -7,7 +7,7 @@ use Code16\Sharp\EntityList\Containers\EntityListDataContainer;
 use Code16\Sharp\EntityList\Layout\EntityListLayoutColumn;
 use Code16\Sharp\EntityList\Traits\HandleCommands;
 use Code16\Sharp\EntityList\Traits\HandleEntityState;
-use Code16\Sharp\EntityList\Traits\HandleFilters;
+use Code16\Sharp\Utils\Filters\HandleFilters;
 use Code16\Sharp\Utils\Transformers\WithCustomTransformers;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -36,9 +36,6 @@ abstract class SharpEntityList
 
     /** @var array */
     protected $multiformEntityKeys = [];
-
-    /** @var string */
-    protected $displayMode = "list";
 
     /** @var bool */
     protected $searchable = false;
@@ -94,20 +91,13 @@ abstract class SharpEntityList
      */
     function data($items = null): array
     {
+        $this->putRetainedFilterValuesInSession();
+
         $items = $items ?: $this->getListData(
             EntityListQueryParams::create()
                 ->setDefaultSort($this->defaultSort, $this->defaultSortDir)
                 ->fillWithRequest()
-                ->setDefaultFilters(
-                    collect($this->filterHandlers)->filter(function($handler, $attribute) {
-                        return !request()->has("filter_$attribute")
-                            && $handler instanceof EntityListRequiredFilter;
-
-                    })->map(function($handler, $attribute) {
-                        return ["name" => $attribute, "value" => $handler->defaultValue()];
-
-                    })->pluck("value", "name")->all()
-                )
+                ->setDefaultFilters($this->getFilterDefaultValues())
         );
 
         if($items instanceof LengthAwarePaginator) {
@@ -148,7 +138,6 @@ abstract class SharpEntityList
         $config = [
             "instanceIdAttribute" => $this->instanceIdAttribute,
             "multiformAttribute" => $this->multiformAttribute,
-            "displayMode" => $this->displayMode,
             "searchable" => $this->searchable,
             "paginated" => $this->paginated,
             "reorderable" => !is_null($this->reorderHandler),
@@ -172,17 +161,6 @@ abstract class SharpEntityList
     public function setInstanceIdAttribute(string $instanceIdAttribute)
     {
         $this->instanceIdAttribute = $instanceIdAttribute;
-
-        return $this;
-    }
-
-    /**
-     * @param string $displayMode
-     * @return $this
-     */
-    public function setDisplayMode(string $displayMode)
-    {
-        $this->displayMode = $displayMode;
 
         return $this;
     }

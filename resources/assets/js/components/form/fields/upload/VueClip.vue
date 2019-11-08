@@ -3,7 +3,7 @@
         <div class="SharpUpload__inner">
             <div class="SharpUpload__content">
                 <form v-show="!file" class="dropzone">
-                    <button type="button" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button" :disabled="readOnly">
+                    <button type="button" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button" :disabled="readOnly">
                         {{ l('form.upload.browse_button') }}
                     </button>
                 </form>
@@ -52,8 +52,8 @@
             </div>
         </div>
         <template v-if="!!originalImageSrc && isCroppable">
-            <sharp-modal v-model="showEditModal" @ok="onEditModalOk" @shown="onEditModalShown" @hidden="onEditModalHidden" no-close-on-backdrop
-                         :title="l('modals.cropper.title')" ref="modal">
+            <sharp-modal :visible.sync="showEditModal" @ok="onEditModalOk" @shown="onEditModalShown" @hidden="onEditModalHidden" no-close-on-backdrop
+                         :title="l('modals.cropper.title')" static ref="modal">
                 <vue-cropper ref="cropper"
                              class="SharpUpload__modal-vue-cropper"
                              :view-mode="2"
@@ -79,16 +79,13 @@
 </template>
 
 <script>
-    import VueClip from '../../../vendor/vue-clip/components/Clip/index';
-    import File from '../../../vendor/vue-clip/File';
-    import Modal from '../../../Modal';
+    import VueClip from 'vue-clip/src/components/Clip';
     import VueCropper from 'vue-cropperjs';
+    import SharpModal from '../../../Modal';
     import rotateResize from './rotate';
 
     import { Localization } from '../../../../mixins';
     import { VueClipModifiers } from './modifiers';
-
-    import axios from 'axios';
 
     export default {
         name: 'SharpVueClip',
@@ -96,7 +93,7 @@
         extends: VueClip,
 
         components: {
-            [Modal.name]: Modal,
+            SharpModal,
             VueCropper
         },
 
@@ -378,10 +375,7 @@
             if (!this.value)
                 return;
 
-            this.files.push(new File({
-                ...this.value,
-                upload: {}
-            }));
+            this.addedFile({ ...this.value, upload: {} });
             this.file.thumbnail = this.value.thumbnail;
             this.file.status = 'exist';
         },

@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import DateField from '../components/form/fields/date/Date.vue';
+import SharpDate from '../components/form/fields/date/Date.vue';
 import moment from 'moment-timezone';
 
-import { MockInjections, QueryComponent, MockI18n } from './utils';
+import { MockInjections, MockI18n } from './test-utils';
 
 
 function date(...args) {
@@ -10,8 +10,14 @@ function date(...args) {
 }
 
 describe('date-field',()=>{
-    Vue.component('sharp-date', DateField);
-    Vue.use(QueryComponent);
+    Vue.component('sharp-date', {
+        extends: SharpDate,
+        components: {
+            BPopover: {
+                template:'<div><slot v-bind="{}" /></div>',
+            }
+        }
+    });
 
     moment.tz.setDefault('UTC');
 
@@ -28,6 +34,7 @@ describe('date-field',()=>{
                             :step-time="stepTime" 
                             :min-time="minTime" 
                             :max-time="maxTime"
+                            :monday-first="mondayFirst"
                             @input="inputEmitted"
                             >
                 </sharp-date>
@@ -80,6 +87,20 @@ describe('date-field',()=>{
         expect(document.body.innerHTML).toMatchSnapshot();
     });
 
+    test('can mount "monday first" Date field', async () => {
+        let $date = await createVm({
+            propsData: {
+                mondayFirst: true,
+            }
+        });
+
+        $date.showPicker = true;
+
+        await Vue.nextTick();
+
+        expect(document.body.innerHTML).toMatchSnapshot();
+    });
+
     test('expose appropriate props to TimePicker', async () => {
         let $date = await createVm({
             propsData: {
@@ -90,7 +111,7 @@ describe('date-field',()=>{
             }
         });
 
-        let timepicker = $date.$findChild('SharpTimePicker');
+        let timepicker = $date.$refs.timepicker;
 
         $date.showPicker = true;
 
@@ -112,13 +133,13 @@ describe('date-field',()=>{
     test('expose appropriate props to DatePicker', async () => {
         let $date = await createVm();
 
-        let datepicker = $date.$findChild('SharpDatepicker');
+        let datepicker = $date.$refs.datepicker;
 
         expect(datepicker.$props).toMatchObject({
             value: date(1996, 7, 20, 12, 11),
             language: 'fr',
             inline: true,
-            mondayFirst: true
+            mondayFirst: undefined,
         });
     });
 
@@ -135,7 +156,7 @@ describe('date-field',()=>{
     test('emit input on date changed & correct value', async () => {
         let $date = await createVm();
 
-        let datepicker = $date.$findChild('SharpDatepicker');
+        let datepicker = $date.$refs.datepicker;
 
         let inputEmitted = jest.fn();
         $date.$on('input', inputEmitted);
@@ -149,7 +170,7 @@ describe('date-field',()=>{
     test('emit input on time changed & correct value', async () => {
         let $date = await createVm();
 
-        let timepicker = $date.$findChild('SharpTimePicker');
+        let timepicker = $date.$refs.timepicker;
 
         let inputEmitted = jest.fn();
         $date.$on('input', inputEmitted);
@@ -418,27 +439,6 @@ describe('date-field',()=>{
         expect(input.setSelectionRange).toHaveBeenCalledWith(0,2);
     });
 
-    test('show on focus', async () => {
-        let $date = await createVm();
-
-        let { input } = $date.$refs;
-
-        input.focus();
-
-        expect($date.showPicker).toBe(true);
-    });
-
-    test('hide on blur', async () => {
-        let $date = await createVm();
-
-        let { input } = $date.$refs;
-
-        input.focus();
-        input.blur();
-
-        expect($date.showPicker).toBe(false);
-    });
-
     test('time only value', async () => {
         let $date = await createVm({
             propsData: {
@@ -470,7 +470,7 @@ async function createVm(customOptions={}) {
         el: '#app',
 
         mixins: [customOptions, MockInjections],
-        props: ['readOnly', 'disableTime','disableDate' ,'displayFormat', 'stepTime', 'minTime', 'maxTime'],
+        props: ['readOnly', 'disableTime','disableDate' ,'displayFormat', 'stepTime', 'minTime', 'maxTime','mondayFirst'],
 
         'extends': {
             methods: {

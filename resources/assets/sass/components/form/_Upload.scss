@@ -1,6 +1,7 @@
 .SharpUpload {
   position: relative;
-  margin:0;
+  margin: 0;
+  padding: 0!important;
 
   &:not(.SharpUpload--empty) {
     @extend .SharpModule;
@@ -23,6 +24,9 @@
   &--disabled {
     cursor: default;
     opacity: 0.7;
+    .SharpUpload__upload-button {
+      pointer-events: none;
+    }
   }
 
   .dropzone {
@@ -48,6 +52,7 @@
 
   &__upload-button {
     width: 100%;
+    background: rgba(255,255,255,.75);
   }
 
   &--compacted {

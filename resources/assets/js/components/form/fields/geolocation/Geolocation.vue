@@ -1,10 +1,10 @@
 <template>
     <div class="SharpGeolocation">
-        <template v-if="!loaded">
+        <template v-if="isLoading">
             {{ l('form.geolocation.loading') }}
         </template>
-        <template v-else-if="!value">
-            <SharpButton outline class="w-100" v-b-modal="modalId">
+        <template v-else-if="isEmpty">
+            <SharpButton outline class="w-100" @click="handleShowModalButtonClicked">
                 {{ l('form.geolocation.browse_button') }}
             </SharpButton>
         </template>
@@ -15,16 +15,16 @@
             >
                 <div class="row">
                     <div class="col-7">
-                        <GmapMap
+                        <component
+                            :is="mapComponent"
+                            class="SharpGeolocation__map"
+                            :class="mapClasses"
+                            :marker-position="value"
                             :center="value"
                             :zoom="zoomLevel"
-                            :options="defaultMapOptions"
-                            style="padding-bottom: 80%"
-                            class="mw-100"
-                            ref="map"
-                        >
-                            <GmapMarker :position="value"></GmapMarker>
-                        </GmapMap>
+                            :max-bounds="maxBounds"
+                            :tiles-url="tilesUrl"
+                        />
                     </div>
                     <div class="col-5 pl-0">
                         <div class="d-flex flex-column justify-content-between h-100">
@@ -36,7 +36,7 @@
                                 <SharpButton small outline type="danger" class="remove-button" :disabled="readOnly" @click="handleRemoveButtonClicked">
                                     {{ l('form.geolocation.remove_button') }}
                                 </SharpButton>
-                                <SharpButton small outline :disabled="readOnly" v-b-modal="modalId">
+                                <SharpButton small outline :disabled="readOnly" @click="handleEditButtonClicked">
                                     {{ l('form.geolocation.edit_button') }}
                                 </SharpButton>
                             </div>
@@ -45,40 +45,58 @@
                 </div>
             </SharpCard>
         </template>
-        <SharpGeolocationEdit
-            :modal-id="modalId"
-            :value="value"
-            :center="value || initialPosition"
-            :zoom="zoomLevel"
-            :geocoding="geocoding"
-            @change="handlePositionChanged"
-        />
+        <SharpModal
+            :title="modalTitle"
+            :visible.sync="modalVisible"
+            no-close-on-backdrop
+            @ok="handleModalSubmitted"
+        >
+            <transition :duration="300">
+                <template v-if="modalVisible">
+                    <SharpGeolocationEdit
+                        :location="value"
+                        :center="value || initialPosition"
+                        :zoom="zoomLevel"
+                        :max-bounds="maxBounds"
+                        :maps-provider="providerName(mapsProvider)"
+                        :maps-options="providerOptions(mapsProvider)"
+                        :geocoding="geocoding"
+                        :geocoding-provider="providerName(geocodingProvider)"
+                        :geocoding-options="providerOptions(geocodingProvider)"
+                        @change="handleLocationChanged"
+                    />
+                </template>
+            </transition>
+        </SharpModal>
     </div>
 </template>
 
 <script>
-    import Vue from 'vue';
-    import * as VueGoogleMaps from '../../../vendor/vue2-google-maps/main';
-    import bModal from 'bootstrap-vue/es/directives/modal/modal';
-
     import { Localization } from '../../../../mixins';
+    import { SharpCard, SharpButton } from "../../../ui";
+    import SharpModal from '../../../Modal';
 
-    import { SharpCard, SharpButton } from '../../../ui';
+    import { getMapByProvider, loadMapProvider } from "./maps";
+    import { dd2dms, tilesUrl, providerName, providerOptions, triggerResize } from "./util";
+
     import SharpGeolocationEdit from './GeolocationEdit.vue';
-    import GeolocationCommons from './Commons';
+
 
     export default {
         name: 'SharpGeolocation',
-        mixins: [Localization, GeolocationCommons],
+        mixins: [Localization],
 
-        inject: ['$tab'],
+        inject: {
+            $tab: {
+                default: null
+            }
+        },
 
         components: {
-            GmapMap: VueGoogleMaps.Map,
-            GmapMarker: VueGoogleMaps.Marker,
             SharpGeolocationEdit,
             SharpCard,
-            SharpButton
+            SharpButton,
+            SharpModal,
         },
 
         props: {
@@ -88,73 +106,125 @@
             geocoding: Boolean,
             apiKey: String,
             boundaries: Object,
-            zoomLevel: Number,
-            initialPosition: Object,
+            zoomLevel: {
+                type: Number,
+                default: 4
+            },
+            initialPosition: {
+                type: Object,
+                default: () => ({
+                    lat: 46.1445458,
+                    lng: -2.4343779
+                })
+            },
             displayUnit: {
                 type: String,
                 default: 'DD',
-                validator: unit => unit==='DMS'||unit==='DD'
-            }
+                validator: unit => unit==='DMS' || unit==='DD'
+            },
+            mapsProvider: {
+                type: Object,
+                default: ()=>({
+                    name: 'gmaps',
+                }),
+            },
+            geocodingProvider: {
+                type: Object,
+                default:() => ({
+                    name: 'gmaps',
+                }),
+            },
         },
-
         data() {
             return {
-                loaded: false
+                ready: false,
+                modalVisible: false,
+                location: this.value,
             }
         },
-
         computed: {
-            modalId() {
-                return `${this.uniqueIdentifier.replace('.','-')}-modal`
+            isLoading() {
+                return !this.ready;
+            },
+            isEmpty() {
+                return !this.value;
             },
             latLngString() {
                 if(this.displayUnit === 'DMS') {
-                    return this.latLng2DMS(this.value)
+                    return {
+                        lat: dd2dms(this.value.lat),
+                        lng: dd2dms(this.value.lng, true)
+                    }
+                } else if(this.displayUnit === 'DD') {
+                    return this.value;
                 }
-                else if(this.displayUnit === 'DD') {
-                    return this.latLng2DD(this.value);
-                }
-            }
+            },
+            mapComponent() {
+                return getMapByProvider(providerName(this.mapsProvider));
+            },
+            mapClasses() {
+                return [
+                    `SharpGeolocation__map--${providerName(this.mapsProvider)}`,
+                ];
+            },
+            tilesUrl() {
+                const mapsOptions = providerOptions(this.mapsProvider);
+                return tilesUrl(mapsOptions);
+            },
+            maxBounds() {
+                return this.boundaries
+                    ? [this.boundaries.sw, this.boundaries.ne]
+                    : null;
+            },
+            modalTitle() {
+                return this.geocoding
+                    ? this.l('form.geolocation.modal.title')
+                    : this.l('form.geolocation.modal.title-no-geocoding');
+            },
         },
+        methods: {
+            providerName,
+            providerOptions,
 
-        methods:{
-            handlePositionChanged(value) {
-                this.$emit('input', value);
+            handleModalSubmitted() {
+                this.$emit('input', this.location);
             },
             handleRemoveButtonClicked() {
                 this.$emit('input', null);
             },
-
-            async load() {
-                if(this.$root.$_gmapLoaded) {
-                    return this.$root.$_gmapLoaded;
-                }
-
-                let loadOptions = { v:'3' };
-                if(this.apiKey) loadOptions.key = this.apiKey;
-
-                Vue.use(VueGoogleMaps, {
-                    installComponents: false,
-                    load: loadOptions
+            handleShowModalButtonClicked() {
+                this.modalVisible = true;
+            },
+            handleEditButtonClicked() {
+                this.modalVisible = true;
+            },
+            handleLocationChanged(location) {
+                this.location = location;
+            },
+            loadProvider(providerData) {
+                const name = providerName(providerData);
+                const { apiKey } = providerOptions(providerData);
+                return loadMapProvider(name, {
+                    apiKey,
                 });
-
-                this.$root.$_gmapLoaded = VueGoogleMaps.loaded;
-                return VueGoogleMaps.loaded;
+            },
+            async init() {
+                await this.loadProvider(this.mapsProvider);
+                if(this.geocodingProvider) {
+                    await this.loadProvider(this.geocodingProvider);
+                }
+                this.ready = true;
             }
         },
-
-        directives: {
-            bModal
+        created() {
+            this.init();
         },
-
-        async created() {
-            await this.load();
-            this.loaded = true;
-        },
-
         mounted() {
             if(this.$tab) {
-                this.$tab.$on('active', ()=>this.refreshMap());
+                this.$tab.$once('active', () => {
+                    // force update maps components on tab active
+                    triggerResize();
+                });
             }
         }
     }

@@ -25,60 +25,66 @@
                     </svg>
                 </button>
             </template>
+            <template slot="tag" slot-scope="{ option, remove }">
+                <span class="multiselect__tag" :key="option">
+                    <span>{{ multiselectLabel(option) }}</span>
+                    <i aria-hidden="true" tabindex="1" @keypress.enter.prevent="remove(option)" @mousedown.prevent.stop="remove(option)" class="multiselect__tag-icon"></i>
+                </span>
+            </template>
             <slot name="option" slot="option"></slot>
         </sharp-multiselect>
         <template v-else>
-            <template v-if="multiple">
-                <component :is="inline?'span':'div'"
-                           v-for="option in options"
-                           :key="option.id"
-                           class="SharpSelect__item"
-                           :class="{'SharpSelect__item--inline':inline}"
-                >
-                    <sharp-check :value="checked(option.id)"
-                                 :text="option.label"
-                                 :read-only="readOnly"
-                                 @input="handleCheckboxChanged($event,option.id)">
-                    </sharp-check>
-                </component>
-            </template>
-            <div v-else class="SharpSelect__radio-button-group" :class="{'SharpSelect__radio-button-group--block':!inline}">
-                <component :is="inline?'span':'div'"
-                           v-for="(option, index) in options"
-                           :key="option.id"
-                           class="SharpSelect__item"
-                           :class="{'SharpSelect__item--inline':inline}"
-                >
-                    <input type="radio"
-                           class="SharpRadio"
-                           tabindex="0"
-                           :id="`${uniqueIdentifier}${index}`"
-                           :checked="value===option.id"
-                           :value="option.id"
-                           :disabled="readOnly"
-                           :name="uniqueIdentifier"
-                           @change="handleRadioChanged(option.id)"
-                    >
-                    <label class="SharpRadio__label" :for="`${uniqueIdentifier}${index}`">
-                        <span class="SharpRadio__appearance"></span>
-                        {{option.label}}
-                    </label>
-
-                </component>
+            <div class="SharpSelect__group" :class="{'SharpSelect__group--block':!inline}">
+                <template v-if="multiple">
+                    <template v-for="option in options">
+                        <div class="SharpSelect__item" :class="itemClasses" :key="option.id">
+                            <SharpCheck
+                                :value="checked(option.id)"
+                                :text="optionsLabel[option.id]"
+                                :read-only="readOnly"
+                                @input="handleCheckboxChanged($event,option.id)"
+                            />
+                        </div>
+                    </template>
+                </template>
+                <template v-else>
+                    <template v-for="(option, index) in options">
+                        <div class="SharpSelect__item" :class="itemClasses" :key="option.id">
+                            <input type="radio"
+                                class="SharpRadio"
+                                tabindex="0"
+                                :id="`${uniqueIdentifier}${index}`"
+                                :checked="value===option.id"
+                                :value="option.id"
+                                :disabled="readOnly"
+                                :name="uniqueIdentifier"
+                                @change="handleRadioChanged(option.id)"
+                            >
+                            <label class="SharpRadio__label" :for="`${uniqueIdentifier}${index}`">
+                                <span class="SharpRadio__appearance"></span>
+                                {{ optionsLabel[option.id] }}
+                            </label>
+                        </div>
+                    </template>
+                </template>
             </div>
         </template>
     </div>
 </template>
 
 <script>
-    import Multiselect from '../../Multiselect';
+    import SharpMultiselect from '../../Multiselect';
     import SharpCheck from './Check.vue';
+    import localize from '../../../mixins/localize/Select';
+    import {setDefaultValue} from "../../../util/field";
 
     export default {
         name: 'SharpSelect',
 
+        mixins: [localize],
+
         components: {
-            [Multiselect.name]: Multiselect,
+            SharpMultiselect,
             SharpCheck
         },
 
@@ -87,7 +93,8 @@
             uniqueIdentifier: String,
             options: {
                 type: Array,
-                required: true
+                required: true,
+                default: ()=>[],
             },
             multiple: {
                 type: Boolean,
@@ -119,19 +126,29 @@
                 checkboxes: this.value
             }
         },
+        watch: {
+            options() {
+                this.init();
+            }
+        },
         computed: {
             multiselectOptions() {
                 return this.options.map(o => o.id);
             },
             optionsLabel() {
-                if (this.display !== 'dropdown')
-                    return;
+                // if (this.display !== 'dropdown')
+                //     return;
 
                 return this.options.reduce((map, opt) => {
-                    map[opt.id] = opt.label;
+                    map[opt.id] = this.localizedOptionLabel(opt);
                     return map;
                 }, {});
-            }
+            },
+            itemClasses() {
+                return {
+                    'SharpSelect__item--inline': this.inline,
+                }
+            },
         },
         methods: {
             remove() {
@@ -156,12 +173,20 @@
             },
             handleRadioChanged(optId) {
                 this.$emit('input', optId);
+            },
+            setDefault() {
+                if(!this.clearable && this.value == null && this.options.length>0) {
+                    this.$emit('input', this.options[0].id, { force:true });
+                }
+            },
+            init() {
+                setDefaultValue(this, this.setDefault, {
+                    dependantAttributes: ['options'],
+                });
             }
         },
         created() {
-            if(!this.clearable && this.value == null && this.options.length>0) {
-                this.$emit('input', this.options[0].id);
-            }
+            this.init();
         }
     }
 </script>

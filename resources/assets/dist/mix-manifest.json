@@ -1,11 +1,8 @@
 {
-    "/sharp.js": "/sharp.js?id=df00a3f384f38bdaaa80",
-    "/.bin/sharp-app.css": "/.bin/sharp-app.css?id=1783d19c7af2ba325521",
-    "/.bin/vendors.css": "/.bin/vendors.css?id=b2a0b102d03403904f14",
-    "/sharp-cms.css": "/sharp-cms.css?id=caa0dbcfeb8e5805d477",
-    "/.bin/vendor-components.css": "/.bin/vendor-components.css?id=59ab06bc27e64dd9ae9f",
-    "/vendor.js": "/vendor.js?id=d17dc17bd04a9f07a2ad",
-    "/api.js": "/api.js?id=9c74f18bd5f7d29c2533",
-    "/manifest.js": "/manifest.js?id=0225916a5d4fbc86a881",
-    "/sharp.css": "/sharp.css?id=b49d77c8e3d5255ec8c7"
+    "/manifest.js": "/manifest.js?id=01c8731923a46c30aaed",
+    "/vendor.js": "/vendor.js?id=de27430943c00e9059f0",
+    "/client-api.js": "/client-api.js?id=7e022aad8155f6031752",
+    "/sharp.js": "/sharp.js?id=d9a1d1d302b39ac99a4e",
+    "/sharp.css": "/sharp.css?id=420dcaaded7b76d1e62a",
+    "/sharp-cms.css": "/sharp-cms.css?id=7f0b86d6a85ab17bbda3"
 }

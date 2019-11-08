@@ -5,6 +5,7 @@ namespace Code16\Sharp\Tests\Unit\Form\Fields\Formatters;
 use Code16\Sharp\Form\Fields\Formatters\AutocompleteFormatter;
 use Code16\Sharp\Form\Fields\SharpFormAutocompleteField;
 use Code16\Sharp\Tests\SharpTestCase;
+use Illuminate\Support\Str;
 
 class AutocompleteFormatterTest extends SharpTestCase
 {
@@ -13,7 +14,7 @@ class AutocompleteFormatterTest extends SharpTestCase
     /** @test */
     function we_can_format_local_value_to_front()
     {
-        $value = str_random();
+        $value = Str::random();
 
         // Front always need an object
         $this->assertEquals(["id" => $value], (new AutocompleteFormatter)->toFront(
@@ -25,14 +26,36 @@ class AutocompleteFormatterTest extends SharpTestCase
             SharpFormAutocompleteField::make("text", "local")->setItemIdAttribute("num"),
             $value
         ));
+
+        $this->assertEquals(["id" => $value], (new AutocompleteFormatter)->toFront(
+            SharpFormAutocompleteField::make("text", "local"),
+            ["id" => $value]
+        ));
+
+        $this->assertEquals(["id" => $value], (new AutocompleteFormatter)->toFront(
+            SharpFormAutocompleteField::make("text", "local"),
+            (object)["id" => $value]
+        ));
+
+        $this->assertEquals(["id" => $value], (new AutocompleteFormatter)->toFront(
+            SharpFormAutocompleteField::make("text", "local"),
+            new class($value) {
+                function __construct($value) {
+                    $this->value = $value;
+                }
+                function toArray() {
+                    return ["id" => $this->value];
+                }
+            }
+        ));
     }
 
     /** @test */
     function we_can_format_remote_value_to_front()
     {
         $value = [
-            "id" => str_random(),
-            "label" => str_random()
+            "id" => Str::random(),
+            "label" => Str::random()
         ];
 
         $this->assertEquals($value, (new AutocompleteFormatter)->toFront(
@@ -67,8 +90,8 @@ class AutocompleteFormatterTest extends SharpTestCase
     {
         // Front always send an object
         $value = [
-            "id" => str_random(),
-            "label" => str_random()
+            "id" => Str::random(),
+            "label" => Str::random()
         ];
 
         // Back always need an id

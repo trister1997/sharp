@@ -6,7 +6,7 @@ exports[`vue-clip can mount "destroyed" VueClip component 1`] = `
 		<div class="SharpUpload__inner">
 			<div class="SharpUpload__content">
 				<form class="dropzone">
-					<button type="button" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button">
+					<button type="button" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button">
 						{{ form.upload.browse_button }}
 					</button>
 				</form>
@@ -28,7 +28,7 @@ exports[`vue-clip can mount "in progress" VueClip component 1`] = `
 		<div class="SharpUpload__inner dz-clickable">
 			<div class="SharpUpload__content">
 				<form class="dropzone" style="display: none;">
-					<button type="button" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button">
+					<button type="button" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button">
 						{{ form.upload.browse_button }}
 					</button>
 				</form>
@@ -80,7 +80,7 @@ exports[`vue-clip can mount VueClip component 1`] = `
 		<div class="SharpUpload__inner dz-clickable">
 			<div class="SharpUpload__content">
 				<form class="dropzone">
-					<button type="button" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button">
+					<button type="button" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button">
 						{{ form.upload.browse_button }}
 					</button>
 				</form>
@@ -103,7 +103,7 @@ exports[`vue-clip can mount initially image VueClip component 1`] = `
 		<div class="SharpUpload__inner dz-clickable">
 			<div class="SharpUpload__content">
 				<form class="dropzone" style="display: none;">
-					<button type="button" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button">
+					<button type="button" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button">
 						{{ form.upload.browse_button }}
 					</button>
 				</form>
@@ -144,41 +144,41 @@ exports[`vue-clip can mount initially image VueClip component 1`] = `
 				</div>
 			</div>
 		</div>
-		<div class="SharpModal">
-			<div id="__BV_modal_outer_mocked">
-				<div id="mocked" role="dialog" aria-hidden="true" class="modal fade" style="display: none;">
-					<div class="modal-dialog modal-md">
-						<div tabindex="-1" role="document" aria-labelledby="__BV_modal_header_mocked" aria-describedby="__BV_modal_body_mocked" class="modal-content">
-							<header id="__BV_modal_header_mocked" class="modal-header">
-								<div>
-									<h5 class="SharpModal__heading">{{ modals.cropper.title }}</h5>
-									<button type="button" class="SharpModal__close">
-										<svg width="10" height="10" viewBox="0 0 10 10" fill-rule="evenodd" class="SharpModal__close-icon">
-											<path d="M9.8 8.6L8.4 10 5 6.4 1.4 10 0 8.6 3.6 5 .1 1.4 1.5 0 5 3.6 8.6 0 10 1.4 6.4 5z"></path>
-										</svg>
-									</button>
-								</div>
-							</header>
-							<div id="__BV_modal_body_mocked" class="modal-body">
-								<!---->
-								<div>
-									<button class="SharpButton SharpButton--primary">
-										<i class="fa fa-rotate-left"></i>
-									</button>
-									<button class="SharpButton SharpButton--primary">
-										<i class="fa fa-rotate-right"></i>
-									</button>
-								</div>
+		<div id="mocked___BV_modal_outer_" style="position: absolute; z-index: 1040;">
+			<div id="mocked" role="dialog" aria-hidden="true" aria-labelledby="mocked___BV_modal_title_" aria-describedby="mocked___BV_modal_body_" class="modal fade SharpModal" style="display: none;">
+				<div class="modal-dialog modal-md">
+					<!---->
+					<div role="document" id="mocked___BV_modal_content_" tabindex="-1" class="modal-content">
+						<header id="mocked___BV_modal_header_" class="modal-header">
+							<div>
+								<h5 class="SharpModal__heading">{{ modals.cropper.title }}</h5>
+								<button type="button" class="SharpModal__close">
+									<svg width="10" height="10" viewBox="0 0 10 10" fill-rule="evenodd" class="SharpModal__close-icon">
+										<path d="M9.8 8.6L8.4 10 5 6.4 1.4 10 0 8.6 3.6 5 .1 1.4 1.5 0 5 3.6 8.6 0 10 1.4 6.4 5z"></path>
+									</svg>
+								</button>
 							</div>
-							<footer id="__BV_modal_footer_mocked" class="modal-footer">
-								<button type="button" class="btn btn-primary">{{ modals.ok_button }}</button>
-								<button type="button" class="btn btn-secondary">{{ modals.cancel_button }}</button>
-							</footer>
+						</header>
+						<div id="mocked___BV_modal_body_" class="modal-body">
+							<!---->
+							<div>
+								<button class="SharpButton SharpButton--primary">
+									<i class="fa fa-rotate-left"></i>
+								</button>
+								<button class="SharpButton SharpButton--primary">
+									<i class="fa fa-rotate-right"></i>
+								</button>
+							</div>
 						</div>
+						<footer id="mocked___BV_modal_footer_" class="modal-footer">
+							<button type="button" class="btn btn-secondary">{{ modals.cancel_button }}</button>
+							<button type="button" class="btn btn-primary">{{ modals.ok_button }}</button>
+						</footer>
 					</div>
+					<!---->
 				</div>
-				<!---->
 			</div>
+			<!---->
 		</div>
 		<a style="display: none;"></a>
 	</div>
@@ -192,7 +192,7 @@ exports[`vue-clip can mount initially non image VueClip component 1`] = `
 		<div class="SharpUpload__inner dz-clickable">
 			<div class="SharpUpload__content">
 				<form class="dropzone" style="display: none;">
-					<button type="button" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button">
+					<button type="button" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button">
 						{{ form.upload.browse_button }}
 					</button>
 				</form>
@@ -244,7 +244,7 @@ exports[`vue-clip can mount non croppable image 1`] = `
 		<div class="SharpUpload__inner dz-clickable">
 			<div class="SharpUpload__content">
 				<form class="dropzone" style="display: none;">
-					<button type="button" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button">
+					<button type="button" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button">
 						{{ form.upload.browse_button }}
 					</button>
 				</form>
@@ -298,7 +298,7 @@ exports[`vue-clip can mount read-only VueClip component 1`] = `
 		<div class="SharpUpload__inner dz-clickable">
 			<div class="SharpUpload__content">
 				<form class="dropzone">
-					<button type="button" disabled="disabled" class="dz-message SharpButton SharpButton--secondary SharpUpload__upload-button">
+					<button type="button" disabled="disabled" class="dz-message SharpButton SharpButton--ghost SharpUpload__upload-button">
 						{{ form.upload.browse_button }}
 					</button>
 				</form>

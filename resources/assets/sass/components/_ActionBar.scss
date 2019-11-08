@@ -9,7 +9,7 @@
       z-index: z('actionBar');
     }
   }
-  &.leftNav--collapsed {
+  #sharp-app.leftNav--collapsed {
     .SharpActionBar__bar {
       left: rem(48px);
       padding-left: 0;
@@ -28,7 +28,7 @@
       height: 100%
     }
     & > * {
-      margin-left:.5rem;
+      margin-left:1.5rem;
     }
     & > *:first-child {
       margin-left:0;
@@ -48,7 +48,9 @@
     padding-top: 1.25rem;
     padding-bottom: 1.25rem;
     background: $brand-01;
-    height: 5rem;
+    @include media-breakpoint-up(sm) {
+      height: 5rem;
+    }
     & > .container {
       height: 100%;
       & > .row {
@@ -94,17 +96,13 @@
 
   &__actions-dropdown {
     align-self: stretch;
-    min-width: 2rem;
-    max-width: 2rem;
+    //min-width: 2rem;
+    //max-width: 2rem;
 
     @extend %overflow-dropdown-list;
 
     .SharpDropdown__text {
-      border: none;
-    }
-
-    .SharpDropdown__arrow {
-      right: .75rem;
+      //border: none;
     }
 
     .SharpDropdown__link {
@@ -112,12 +110,12 @@
     }
 
     &--commands {
-      width: 2.5rem;
-      min-width: 2.5rem;
-      max-width: 2.5rem;
+      //width: 2.5rem;
+      //min-width: 2.5rem;
+      //max-width: 2.5rem;
 
       .SharpDropdown__text {
-        color: $brand-03;
+        //color: $brand-03;
         line-height:1;
       }
 
@@ -127,17 +125,30 @@
 
   &__forms-dropdown {
     width: auto;
-    padding-right: 2rem;
+    @include nav-dropdown;
+
     .SharpDropdown__text { z-index: auto }
     @extend %overflow-dropdown-list;
 
     &, .SharpDropdown__text {
-      background: $brand-03;
+      //background: $brand-03;
     }
     .SharpDropdown__text {
+      &:hover {
+        border-color: lighten($brand-03, 20%);
+      }
+      border-color: $brand-03;
+      background: $brand-03;
       color: $inverse-01;
       font-weight: normal;
       text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+    }
+    &.SharpDropdown--open {
+      .SharpDropdown__text {
+        border-color: lighten($brand-03, 30%);
+      }
     }
     .SharpDropdown__arrow {
       fill: $inverse-01;
@@ -152,6 +163,23 @@
   }
   .SharpButton--secondary-accent, .SharpButton--danger {
     border: 1px solid $ui-01;
+  }
+
+  .SharpButton {
+    border-radius: $btn-border-radius;
+    padding-top: .75em;
+    padding-bottom: .75em;
+    @include media-breakpoint-up(sm) {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .SharpSearch__input {
+    border-radius: $input-border-radius;
   }
 
 
@@ -187,7 +215,11 @@
     @include media-breakpoint-down(sm) {
       &.SharpSearch--active {
         width: 100%;
-        .SharpSearch__input, .SharpSearch__magnifier {
+        .SharpSearch__input {
+          z-index: 101;
+          width: 100%;
+        }
+        .SharpSearch__magnifier {
           z-index: 101;
         }
 
@@ -211,6 +243,8 @@
       }
       .SharpSearch__input {
         padding-right: 0;
+        padding-top: .75em;
+        padding-bottom: .75em;
       }
     }
   }

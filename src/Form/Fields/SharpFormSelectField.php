@@ -3,12 +3,12 @@
 namespace Code16\Sharp\Form\Fields;
 
 use Code16\Sharp\Form\Fields\Formatters\SelectFormatter;
+use Code16\Sharp\Form\Fields\Utils\SharpFormFieldWithDataLocalization;
 use Code16\Sharp\Form\Fields\Utils\SharpFormFieldWithOptions;
-use Illuminate\Support\Collection;
 
 class SharpFormSelectField extends SharpFormField
 {
-    use SharpFormFieldWithOptions;
+    use SharpFormFieldWithOptions, SharpFormFieldWithDataLocalization;
 
     const FIELD_TYPE = "select";
 
@@ -48,6 +48,11 @@ class SharpFormSelectField extends SharpFormField
     protected $inline = false;
 
     /**
+     * @var array
+     */
+    protected $dynamicAttributes;
+
+    /**
      * @param string $key
      * @param array $options
      * @return static
@@ -55,7 +60,7 @@ class SharpFormSelectField extends SharpFormField
     public static function make(string $key, array $options)
     {
         $instance = new static($key, static::FIELD_TYPE, new SelectFormatter);
-        $instance->options = static::formatOptions($options);
+        $instance->options = $options;
 
         return $instance;
     }
@@ -135,6 +140,23 @@ class SharpFormSelectField extends SharpFormField
     }
 
     /**
+     * @param string ...$fieldKeys
+     * @return $this
+     */
+    public function setOptionsLinkedTo(string ...$fieldKeys)
+    {
+        $this->dynamicAttributes = [
+            [
+                "name" => "options",
+                "type" => "map",
+                "path" => $fieldKeys
+            ]
+        ];
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function multiple()
@@ -178,16 +200,26 @@ class SharpFormSelectField extends SharpFormField
 
     /**
      * @return array
+     * @throws \Code16\Sharp\Exceptions\Form\SharpFormFieldValidationException
      */
     public function toArray(): array
     {
-        return parent::buildArray([
-            "options" => $this->options,
-            "multiple" => $this->multiple,
-            "clearable" => $this->clearable,
-            "display" => $this->display,
-            "inline" => $this->inline,
-            "maxSelected" => $this->maxSelected,
-        ]);
+        return parent::buildArray(
+            array_merge([
+                "options" => $this->dynamicAttributes
+                    ? self::formatDynamicOptions($this->options, count($this->dynamicAttributes[0]["path"]))
+                    : self::formatOptions($this->options, $this->idAttribute),
+                "multiple" => $this->multiple,
+                "clearable" => $this->clearable,
+                "display" => $this->display,
+                "inline" => $this->inline,
+                "maxSelected" => $this->maxSelected,
+                "localized" => $this->localized
+            ],
+                $this->dynamicAttributes
+                    ? ["dynamicAttributes" => $this->dynamicAttributes]
+                    : []
+            )
+        );
     }
 }

@@ -10,6 +10,7 @@ use Code16\Sharp\EntityList\EntityListQueryParams;
 use Code16\Sharp\EntityList\EntityListRequiredFilter;
 use Code16\Sharp\EntityList\SharpEntityList;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 class PersonSharpEntityList extends SharpEntityList
 {
@@ -29,7 +30,7 @@ class PersonSharpEntityList extends SharpEntityList
 
         if($params->hasSearch()) {
             $items = collect($items)->filter(function($item) use($params) {
-                return str_contains(strtolower($item["name"]), $params->searchWords(false));
+                return Str::contains(strtolower($item["name"]), $params->searchWords(false));
             })->all();
         }
 
@@ -126,14 +127,12 @@ class PersonSharpEntityListAgeFilter implements EntityListFilter
 }
 
 class PersonSharpEntityListAgeMultipleFilter
-    extends PersonSharpEntityListAgeFilter
-    implements EntityListMultipleFilter
+    extends PersonSharpEntityListAgeFilter implements EntityListMultipleFilter
 {
 }
 
 class PersonSharpEntityListAgeRequiredFilter
-    extends PersonSharpEntityListAgeFilter
-    implements EntityListRequiredFilter
+    extends PersonSharpEntityListAgeFilter implements EntityListRequiredFilter
 {
     /**
      * @return string|int
@@ -144,8 +143,7 @@ class PersonSharpEntityListAgeRequiredFilter
     }
 }
 
-class PersonSharpEntityListReorderHandler
-    implements ReorderHandler
+class PersonSharpEntityListReorderHandler implements ReorderHandler
 {
     function reorder(array $ids)
     {

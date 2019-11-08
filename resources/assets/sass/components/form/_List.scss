@@ -8,6 +8,7 @@
 
   &__add-button {
     width:100%;
+    background: rgba(255,255,255,.5);
   }
 
   &__sort-button {
@@ -149,5 +150,9 @@
       }
     }
   }
+}
 
+.SharpForm__form-item--no-label .SharpList--can-sort {
+  // if the list has no label put margin for the sort button
+  margin-top: 1.5rem;
 }

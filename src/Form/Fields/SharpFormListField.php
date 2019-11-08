@@ -119,8 +119,12 @@ class SharpFormListField extends SharpFormField
      * @param int $maxItemCount
      * @return static
      */
-    public function setMaxItemCount(int $maxItemCount)
+    public function setMaxItemCount(int $maxItemCount = null)
     {
+        if($maxItemCount === null) {
+            return $this->setMaxItemCountUnlimited();
+        }
+
         $this->maxItemCount = $maxItemCount;
 
         return $this;
@@ -239,6 +243,7 @@ class SharpFormListField extends SharpFormField
 
     /**
      * @return array
+     * @throws \Code16\Sharp\Exceptions\Form\SharpFormFieldValidationException
      */
     public function toArray(): array
     {

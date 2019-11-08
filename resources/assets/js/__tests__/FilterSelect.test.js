@@ -1,7 +1,7 @@
-import FilterSelect from '../components/list/FilterSelect.vue';
+import FilterSelect from '../components/list/filters/FilterSelect.vue';
 import Select from '../components/form/fields/Select.vue';
 import { shallowMount } from '@vue/test-utils';
-import { MockI18n } from "./utils";
+import { MockI18n } from "./test-utils";
 import Vue from 'vue';
 
 
@@ -13,7 +13,7 @@ describe('filter-select', ()=>{
             ...options,
             propsData : {
                 filterKey: 'job',
-                name:'Web job',
+                label: 'Web job',
                 values: [
                     { id:1, label:'front' },
                     { id:2, label:'back' },
@@ -66,27 +66,19 @@ describe('filter-select', ()=>{
             multiple: true,
             clearable: false,
             inline: false,
-            uniqueIdentifier: 'job'
         });
     });
 
-    test('call appropriate handlers',()=>{
+    test('call appropriate handlers', async ()=>{
         const wrapper = createWrapper({
             created() {
                 this.handleSelect = jest.fn();
             }
         });
-        const label = wrapper.find('.SharpFilterSelect__text');
         const select = findSelect(wrapper);
-
-        wrapper.setMethods({
-            showMultiselect: jest.fn()
-        });
 
         select.vm.$emit('input');
         expect(wrapper.vm.handleSelect).toHaveBeenCalled();
-        label.trigger('click');
-        expect(wrapper.vm.showMultiselect).toHaveBeenCalled();
     });
 
     test('empty', ()=>{

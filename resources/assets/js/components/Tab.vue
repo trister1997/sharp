@@ -1,9 +1,9 @@
 <script>
-    import Tab from 'bootstrap-vue/es/components/tabs/tab';
+    import { BTab } from 'bootstrap-vue';
 
     export default {
-        name:'SharpBTab',
-        extends: Tab,
+        name: 'SharpBTab',
+        extends: BTab,
         provide() {
             return  {
                 $tab:this
@@ -20,10 +20,13 @@
             }
         },
         watch: {
-            async localActive(val) {
-                if(val) {
-                    await this.$nextTick();
-                    this.$emit('active');
+            localActive: {
+                immediate: true,
+                async handler(val) {
+                    if(val) {
+                        await this.$nextTick();
+                        this.$emit('active');
+                    }
                 }
             }
         },
@@ -38,6 +41,6 @@
         created() {
             this.$on('error', key=>this.setError(key));
             this.$on('clear', key=>this.clearError(key));
-        }
+        },
     }
 </script>

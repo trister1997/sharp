@@ -21,7 +21,7 @@ class SharpFormDateField extends SharpFormField
     /**
      * @var bool
      */
-    protected $mondayFirst = false;
+    protected $mondayFirst = true;
 
     /**
      * @var string
@@ -141,7 +141,7 @@ class SharpFormDateField extends SharpFormField
      * @param string $displayFormat
      * @return $this
      */
-    public function setDisplayFormat(string $displayFormat)
+    public function setDisplayFormat(string $displayFormat = null)
     {
         $this->displayFormat = $displayFormat;
 
@@ -182,6 +182,7 @@ class SharpFormDateField extends SharpFormField
 
     /**
      * @return array
+     * @throws \Code16\Sharp\Exceptions\Form\SharpFormFieldValidationException
      */
     public function toArray(): array
     {

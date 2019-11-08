@@ -5,7 +5,7 @@ namespace Code16\Sharp\Form\Eloquent\Uploads\Thumbnails;
 use Code16\Sharp\Form\Eloquent\Uploads\SharpUploadModel;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\FilesystemManager;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\ImageManager;
 
@@ -89,10 +89,11 @@ class Thumbnail
 
     public function destroyAllThumbnails()
     {
-        $thumbnailPath = config("sharp.uploads.thumbnails_dir");
+        $thumbnailDisk = $this->storage->disk(config("sharp.uploads.thumbnails_disk", "public"));
+        $thumbnailPath = config("sharp.uploads.thumbnails_dir", "thumbnails");
         $destinationRelativeBasePath = dirname($this->uploadModel->file_name);
 
-        File::deleteDirectory(public_path("$thumbnailPath/$destinationRelativeBasePath"), true);
+        $thumbnailDisk->deleteDirectory("$thumbnailPath/$destinationRelativeBasePath");
     }
 
     /**
@@ -113,20 +114,19 @@ class Thumbnail
         if($width==0) $width=null;
         if($height==0) $height=null;
 
-        $thumbnailPath = config("sharp.uploads.thumbnails_dir");
+        $thumbnailDisk = $this->storage->disk(config("sharp.uploads.thumbnails_disk", "public"));
+        $thumbnailPath = config("sharp.uploads.thumbnails_dir", "thumbnails");
 
         $thumbDirNameAppender = sizeof($filters) ? "_" . md5(serialize($filters)) : "";
 
         $thumbName = "$thumbnailPath/$destinationRelativeBasePath/$width-$height"
             . $thumbDirNameAppender . "/$destinationFileName";
 
-        $thumbFile = public_path($thumbName);
-
-        if (!file_exists($thumbFile)) {
+        if (!$thumbnailDisk->exists($thumbName)) {
 
             // Create thumbnail directories if needed
-            if (!file_exists(dirname($thumbFile))) {
-                mkdir(dirname($thumbFile), 0777, true);
+            if (!$thumbnailDisk->exists(dirname($thumbName))) {
+                $thumbnailDisk->makeDirectory(dirname($thumbName));
             }
 
             try {
@@ -152,7 +152,7 @@ class Thumbnail
                     });
                 }
 
-                $sourceImg->save($thumbFile, $this->quality);
+                $sourceImg->save($thumbnailDisk->path($thumbName), $this->quality);
 
             } catch(FileNotFoundException $ex) {
                 return null;
@@ -162,7 +162,7 @@ class Thumbnail
             }
         }
 
-        return url($thumbName) . ($this->appendTimestamp ? "?" . filectime($thumbFile) : "");
+        return $thumbnailDisk->url($thumbName) . ($this->appendTimestamp ? "?" . filectime($thumbnailDisk->path($thumbName)) : "");
     }
 
     /**
@@ -172,7 +172,7 @@ class Thumbnail
      */
     private function resolveFilterClass($class, array $params)
     {
-        if(! str_contains($class, "\\")) {
+        if(! Str::contains($class, "\\")) {
             $class = 'Code16\Sharp\Form\Eloquent\Uploads\Thumbnails\\' . ucfirst($class) . 'Filter';
         }
 

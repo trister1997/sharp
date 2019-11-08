@@ -3,9 +3,12 @@
 namespace Code16\Sharp\Form\Fields;
 
 use Code16\Sharp\Form\Fields\Formatters\TagsFormatter;
+use Code16\Sharp\Form\Fields\Utils\SharpFormFieldWithDataLocalization;
 
 class SharpFormTagsField extends SharpFormField
 {
+    use SharpFormFieldWithDataLocalization;
+
     const FIELD_TYPE = "tags";
 
     /**
@@ -37,6 +40,11 @@ class SharpFormTagsField extends SharpFormField
      * @var array
      */
     protected $options = [];
+
+    /**
+     * @var array
+     */
+    protected $createAdditionalAttributes = [];
 
     /**
      * @param string $key
@@ -90,6 +98,17 @@ class SharpFormTagsField extends SharpFormField
     }
 
     /**
+     * @param array $attributes
+     * @return static
+     */
+    public function setCreateAdditionalAttributes(array $attributes)
+    {
+        $this->createAdditionalAttributes = $attributes;
+
+        return $this;
+    }
+
+    /**
      * @param string $idAttribute
      * @return static
      */
@@ -138,6 +157,14 @@ class SharpFormTagsField extends SharpFormField
     }
 
     /**
+     * @return array
+     */
+    public function createAdditionalAttributes()
+    {
+        return $this->createAdditionalAttributes;
+    }
+
+    /**
      * @return string
      */
     public function idAttribute()
@@ -167,6 +194,7 @@ class SharpFormTagsField extends SharpFormField
 
     /**
      * @return array
+     * @throws \Code16\Sharp\Exceptions\Form\SharpFormFieldValidationException
      */
     public function toArray(): array
     {
@@ -174,7 +202,8 @@ class SharpFormTagsField extends SharpFormField
             "creatable" => $this->creatable,
             "createText" => $this->createText,
             "maxTagCount" => $this->maxTagCount,
-            "options" => $this->options
+            "options" => $this->options,
+            "localized" => $this->localized,
         ]);
     }
 }

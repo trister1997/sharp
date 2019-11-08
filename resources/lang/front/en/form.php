@@ -18,8 +18,9 @@ return [
     'geolocation.modal.title' => 'Type an address or click on the map',
     'geolocation.modal.title-no-geocoding' => 'Click on the map',
     'geolocation.modal.geocode_input.placeholder' => 'Full address',
-    'geolocation.modal.geocode_input.message.ERROR' => "Error: Can't reach Google Maps servers",
-    'geolocation.modal.geocode_input.message.ZERO_RESULTS' => 'No results for (...)',
+    'geolocation.modal.geocode_input.message.error' => "Error: Can't reach Geocoding server",
+    'geolocation.modal.geocode_input.message.no_results' => 'No results for ":query"',
+    'geolocation.modal.search_button' => 'Search',
 
     'upload.browse_button' => 'Browse...',
     'upload.remove_button' => 'Remove',
@@ -31,9 +32,14 @@ return [
     'multiselect.placeholder' => 'Select option',
     'multiselect.max_text' => 'Maximum items reached',
 
+    'tags.unknown_label' => 'Unknown',
+
     'autocomplete.no_results_text' => 'No result found',
 
     'date.validation_error.format' => 'Invalid date format',
+
+    'daterange.start_placeholder' => 'Start date',
+    'daterange.end_placeholder' => 'End date',
 
     'markdown.icons.bold.title' => 'Bold',
     'markdown.icons.italic.title' => 'Italic',

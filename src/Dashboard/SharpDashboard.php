@@ -5,9 +5,13 @@ namespace Code16\Sharp\Dashboard;
 use Code16\Sharp\Dashboard\Layout\DashboardLayoutRow;
 use Code16\Sharp\Dashboard\Widgets\SharpGraphWidgetDataSet;
 use Code16\Sharp\Dashboard\Widgets\SharpWidget;
+use Code16\Sharp\EntityList\Traits\HandleDashboardCommands;
+use Code16\Sharp\Utils\Filters\HandleFilters;
+use Illuminate\Support\Arr;
 
 abstract class SharpDashboard
 {
+    use HandleFilters, HandleDashboardCommands;
 
     /**
      * @var bool
@@ -33,6 +37,11 @@ abstract class SharpDashboard
      * @var array
      */
     protected $panelWidgetsData = [];
+
+    /**
+     * @var array
+     */
+    protected $orderedListWidgetsData = [];
 
     /**
      * @var array
@@ -91,9 +100,10 @@ abstract class SharpDashboard
     {
         $this->checkDashboardIsBuilt();
 
-        return collect($this->widgets)->map(function(SharpWidget $widget) {
-            return $widget->toArray();
-        })->keyBy("key")->all();
+        return collect($this->widgets)
+            ->map->toArray()
+            ->keyBy("key")
+            ->all();
     }
 
     /**
@@ -109,10 +119,28 @@ abstract class SharpDashboard
         }
 
         return [
-            "rows" => collect($this->rows)->map(function(DashboardLayoutRow $row) {
-                return $row->toArray();
-            })->all()
+            "rows" => collect($this->rows)
+                ->map->toArray()
+                ->all()
         ];
+    }
+
+    /**
+     * Build config, meaning add filters, if necessary.
+     */
+    public function buildDashboardConfig()
+    {
+    }
+
+    /**
+     * @return array
+     */
+    public function dashboardConfig()
+    {
+        return tap([], function(&$config) {
+            $this->appendFiltersToConfig($config);
+            $this->appendCommandsToConfig($config);
+        });
     }
 
     /**
@@ -122,7 +150,13 @@ abstract class SharpDashboard
      */
     function data(): array
     {
-        $this->buildWidgetsData();
+        $this->putRetainedFilterValuesInSession();
+
+        $this->buildWidgetsData(
+            DashboardQueryParams::create()
+                ->fillWithRequest()
+                ->setDefaultFilters($this->getFilterDefaultValues())
+        );
 
         // First, graph widgets dataSets
         $data = collect($this->graphWidgetDataSets)
@@ -132,21 +166,46 @@ abstract class SharpDashboard
                 return [
                     "key" => $key,
                     "datasets" => $dataSetsValues->map(function($dataSet) {
-                        return array_except($dataSet, "labels");
+                        return Arr::except($dataSet, "labels");
                     })->all(),
                     "labels" => $dataSetsValues->first()["labels"]
                 ];
             });
 
         // Then, panel widgets data
-        return $data->merge(
-            collect($this->panelWidgetsData)->map(function($value, $key) {
-                return [
-                    "key" => $key,
-                    "data" => $value
-                ];
-            })
-        )->all();
+        $data = $data->merge(
+            collect($this->panelWidgetsData)
+                ->map(function($value, $key) {
+                    return [
+                        "key" => $key,
+                        "data" => $value
+                    ];
+                })
+        );
+
+        // Then, list group widgets data
+        return $data
+            ->merge(
+                collect($this->orderedListWidgetsData)
+                    ->map(function($items, $key) {
+                        $widget = $this->findWidgetByKey($key);
+
+                        $data = collect($items)
+                            ->map(function($item) use($widget) {
+                                return array_merge(
+                                    $item,
+                                    ["url" => $widget->getItemUrl($item)]
+                                );
+                            })
+                            ->all();
+
+                        return [
+                            "key" => $key,
+                            "data" => $data
+                        ];
+                    })
+            )
+            ->all();
     }
 
     /**
@@ -173,12 +232,37 @@ abstract class SharpDashboard
         return $this;
     }
 
+    /**
+     * @param string $panelWidgetKey
+     * @param array $data
+     * @return $this
+     */
+    protected function setOrderedListData(string $panelWidgetKey, array $data)
+    {
+        $this->orderedListWidgetsData[$panelWidgetKey] = $data;
+
+        return $this;
+    }
+
     private function checkDashboardIsBuilt()
     {
         if (!$this->dashboardBuilt) {
             $this->buildWidgets();
             $this->dashboardBuilt = true;
         }
+    }
+
+    /**
+     * @param string $key
+     * @return SharpWidget|null
+     */
+    private function findWidgetByKey($key)
+    {
+        return collect($this->widgets)
+            ->filter(function($widget) use($key) {
+                return $widget->getKey() == $key;
+            })
+            ->first();
     }
 
     /**
@@ -193,6 +277,8 @@ abstract class SharpDashboard
 
     /**
      * Build dashboard's widgets data, using ->addGraphDataSet and ->setPanelData
+     *
+     * @param DashboardQueryParams $params
      */
-    protected abstract function buildWidgetsData();
+    protected abstract function buildWidgetsData(DashboardQueryParams $params);
 }

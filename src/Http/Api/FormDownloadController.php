@@ -4,6 +4,7 @@ namespace Code16\Sharp\Http\Api;
 
 use Code16\Sharp\Form\Fields\Utils\SharpFormFieldWithUpload;
 use Illuminate\Filesystem\FilesystemManager;
+use Illuminate\Support\Str;
 
 class FormDownloadController extends ApiController
 {
@@ -25,6 +26,8 @@ class FormDownloadController extends ApiController
      * @param string $instanceId
      * @param string $formUploadFieldKey
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Code16\Sharp\Exceptions\Auth\SharpAuthorizationException
+     * @throws \Code16\Sharp\Exceptions\SharpInvalidEntityKeyException
      */
     public function show($entityKey, $instanceId, $formUploadFieldKey)
     {
@@ -65,7 +68,7 @@ class FormDownloadController extends ApiController
 
         $disk = $this->filesystem->disk($storageDisk);
 
-        if(starts_with($fileName, $basePath)) {
+        if(Str::startsWith($fileName, $basePath)) {
             return [$disk, $fileName];
         }
 

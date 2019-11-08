@@ -14,8 +14,7 @@ $padding: (
   @if map-has-key($padding, $value) {
     @return map-get($padding, $value);
   } @else {
-    @warn 'padding: could not find #{$value} in $padding map.
-          Please make sure it is defined';
+    @warn 'padding: could not find #{$value} in $padding map. Please make sure it is defined';
   }
 }
 
@@ -75,10 +74,10 @@ $z-indexes: (
   dropdownText : 11,
   dropdownIcon : 12,
   markdown : 30,
-  dropdownActive : 40,
   listItemOverlay: 50,
-  actionBar: 80,
   leftNav : 100,
+  dropdownActive : 101,
+  actionBar: 102,
 );
 
 //-------------------------------------

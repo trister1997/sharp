@@ -18,8 +18,9 @@ return [
     'geolocation.modal.title' => 'Recherchez une addresse ou cliquez sur la carte',
     'geolocation.modal.title-no-geocoding' => 'Cliquez sur la carte',
     'geolocation.modal.geocode_input.placeholder' => 'Adresse',
-    'geolocation.modal.geocode_input.message.ERROR' => 'Erreur: Impossible de contacter Google maps',
-    'geolocation.modal.geocode_input.message.ZERO_RESULTS' => 'Aucun résultats pour (...)',
+    'geolocation.modal.geocode_input.message.error' => "Erreur: Impossible de contacter le service de Geocoding",
+    'geolocation.modal.geocode_input.message.no_results' => 'Aucun résultats pour ":query"',
+    'geolocation.modal.search_button' => 'Rechercher',
 
     'upload.browse_button' => 'Parcourir...',
     'upload.remove_button' => 'Supprimer',
@@ -31,9 +32,14 @@ return [
     'multiselect.placeholder' => 'Choisir',
     'multiselect.max_text' => 'Maximum atteint',
 
+    'tags.unknown_label' => 'Inconnu',
+
     'autocomplete.no_results_text' => 'Pas de résultats',
 
     'date.validation_error.format' => 'Format de date invalide',
+
+    'daterange.start_placeholder' => 'Date de début',
+    'daterange.end_placeholder' => 'Date de fin',
 
     'markdown.icons.bold.title' => 'Gras',
     'markdown.icons.italic.title' => 'Italique',

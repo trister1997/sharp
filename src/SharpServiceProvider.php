@@ -19,17 +19,14 @@ use Code16\Sharp\Http\Middleware\RestoreEntityListParams;
 use Code16\Sharp\Http\Middleware\SharpAuthenticate;
 use Code16\Sharp\Http\Middleware\SharpRedirectIfAuthenticated;
 use Code16\Sharp\Http\SharpContext;
-use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use Intervention\Image\ImageServiceProviderLaravel5;
+use Intervention\Image\ImageServiceProviderLaravelRecent;
 
 class SharpServiceProvider extends ServiceProvider
 {
-    /**
-     * @var string
-     */
-    const VERSION = '4.0.14';
+    /** @var string */
+    const VERSION = '4.1.24';
 
     public function boot()
     {
@@ -44,21 +41,27 @@ class SharpServiceProvider extends ServiceProvider
             __DIR__.'/../resources/assets/dist' => public_path('vendor/sharp')
         ], 'assets');
 
+        $this->publishes([
+            __DIR__.'/../config/config.php' => config_path('sharp.php'),
+        ], 'config');
+
         $this->registerPolicies();
 
         view()->composer(
-            ['sharp::form', 'sharp::list', 'sharp::dashboard'],
+            ['sharp::form', 'sharp::list', 'sharp::dashboard', 'sharp::welcome'],
             MenuViewComposer::class
         );
 
         view()->composer(
-            ['sharp::form', 'sharp::list', 'sharp::dashboard', 'sharp::login', 'sharp::unauthorized'],
+            ['sharp::form', 'sharp::list', 'sharp::dashboard', 'sharp::welcome', 'sharp::login', 'sharp::unauthorized'],
             AssetViewComposer::class
         );
     }
 
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'sharp');
+
         $this->registerMiddleware();
 
         $this->app->singleton(
@@ -69,20 +72,23 @@ class SharpServiceProvider extends ServiceProvider
             SharpAuthorizationManager::class, SharpAuthorizationManager::class
         );
 
-        // Override Laravel's Gate to handle Sharp's ability to define a custom Guard
-        $this->app->singleton(GateContract::class, function ($app) {
-            return new \Illuminate\Auth\Access\Gate($app, function () use ($app) {
-                return request()->is("sharp") || request()->is("sharp/*")
-                    ? sharp_user()
-                    : auth()->guard(config("auth.defaults.guard"))->user();
-            });
-        });
-
         $this->commands([
-            CreateUploadsMigration::class
+            CreateUploadsMigration::class,
+            \Code16\Sharp\Console\ListMakeCommand::class,
+            \Code16\Sharp\Console\FormMakeCommand::class,
+            \Code16\Sharp\Console\StateMakeCommand::class,
+            \Code16\Sharp\Console\MediaMakeCommand::class,
+            \Code16\Sharp\Console\PolicyMakeCommand::class,
+            \Code16\Sharp\Console\ModelWizardCommand::class,
+            \Code16\Sharp\Console\EntityCommandMakeCommand::class,
+            \Code16\Sharp\Console\InstanceCommandMakeCommand::class,
+            \Code16\Sharp\Console\DashboardMakeCommand::class,
+            \Code16\Sharp\Console\ValidatorMakeCommand::class,
+            \Code16\Sharp\Console\ListFilterMakeCommand::class,
+            \Code16\Sharp\Console\ReorderHandlerMakeCommand::class,
         ]);
 
-        $this->app->register(ImageServiceProviderLaravel5::class);
+        $this->app->register(ImageServiceProviderLaravelRecent::class);
     }
 
     protected function registerPolicies()
@@ -92,6 +98,12 @@ class SharpServiceProvider extends ServiceProvider
                 foreach(['entity', 'view', 'update', 'create', 'delete'] as $action) {
                     $this->definePolicy($entityKey, $config["policy"], $action);
                 }
+            }
+        }
+
+        foreach((array)config("sharp.dashboards") as $dashboardKey => $config) {
+            if(isset($config["policy"])) {
+                $this->definePolicy($dashboardKey, $config["policy"], 'view');
             }
         }
     }
